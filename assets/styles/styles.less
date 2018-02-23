@@ -1,0 +1,51 @@
+.text-center {
+  text-align: center;
+}
+
+.file-container {
+  display: inline-block;
+  margin: 5px;
+  position: relative;
+
+  .item-image {
+    top: 1px;
+    right: 1px;
+    bottom: 1px;
+    left: 1px;
+    overflow: hidden;
+
+
+    img {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      top: 50%;
+      left: 50%;
+    }
+  }
+
+}
+
+.file-container.primary .item-image:after {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 5px;
+  content: 'Primary image';
+  color: #fff;
+  font-size: 12px;
+  text-align: center;
+  background-color: #44c4e7;
+  z-index: 3;
+}
+
+.modal-dialog {
+  max-width: 932px;
+}
+
+.block-center {
+  margin: auto;
+  left: 0;
+  right: 0;
+}

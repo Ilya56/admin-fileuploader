@@ -1,0 +1,60 @@
+extends ./layout
+
+block styles
+  link(rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css")
+
+block body
+  h1.text-center File uploader
+  #images
+    input#images-input(type='hidden')
+    input#images-preview(type='hidden')
+    .modal.fade#file-info-modal(role='dialog')
+      .modal-dialog
+        .modal-content
+          .modal-header
+          .modal-body.form-horizontal
+            img.block-center#file-image
+            .info
+              .form-group
+                label.col-md-2(for='name') File name:
+                label.col-md-8#name
+              .form-group
+                label.col-md-2(for='dimensions') File dimensions:
+                label.col-md-8#dimensions
+              .form-group
+                label.col-md-2(for='size') File size:
+                label.col-md-8#size
+              .form-group
+                label(for='url') URL:
+                input.form-control#url(type='text', readonly=true)
+
+              .form-group
+                label(for='title') Title:
+                input.form-control#title(type='text')
+              .form-group
+                label(for='desc') Description:
+                input.form-control#desc(type='text')
+              .form-group
+                label(for='year') Year:
+                input.form-control#year(type='text')
+              .form-group
+                label(for='author') Author:
+                input.form-control#author(type='text')
+          .modal-footer
+            button.btn.btn-success#file-uploader-save Save
+            button.btn(data-dismiss='modal') Close
+
+
+block scripts
+  script(src="/js/fileupload.js")
+  script.
+    new FileUploader({
+      type: "images",
+      element: "images",
+      url: "/file/upload",
+      acceptedFiles: ["gif", "jpg", "png"],
+      data: "images-input",
+      images: {
+        dataPreview: 'images-preview'
+      }
+    });
