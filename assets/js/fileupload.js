@@ -41,24 +41,71 @@ class FileUploader {
 
     const fu = this;
 
-    // add progress, gallery and dropzone
+    // add progress, gallery, dropzone and modal
+    this.modalDOM = '<div id="file-info-modal" role="dialog" class="modal fade">\n' +
+      '  <div class="modal-dialog">\n' +
+      '    <div class="modal-content">\n' +
+      '      <div class="modal-header"></div>\n' +
+      '      <div class="modal-body form-horizontal"><img id="file-image" class="block-center"/>\n' +
+      '        <div class="info">\n' +
+      '          <div class="form-group">\n' +
+      '            <label for="name" class="col-md-2">File name:</label>\n' +
+      '            <label id="name" class="col-md-8"></label>\n' +
+      '          </div>\n' +
+      '          <div class="form-group">\n' +
+      '            <label for="dimensions" class="col-md-2">File dimensions:</label>\n' +
+      '            <label id="dimensions" class="col-md-8"></label>\n' +
+      '          </div>\n' +
+      '          <div class="form-group">\n' +
+      '            <label for="size" class="col-md-2">File size:</label>\n' +
+      '            <label id="size" class="col-md-8"></label>\n' +
+      '          </div>\n' +
+      '          <div class="form-group">\n' +
+      '            <label for="url">URL:</label>\n' +
+      '            <input id="url" type="text" readonly="readonly" class="form-control"/>\n' +
+      '          </div>\n' +
+      '          <div class="form-group">\n' +
+      '            <label for="title">Title:</label>\n' +
+      '            <input id="title" type="text" class="form-control"/>\n' +
+      '          </div>\n' +
+      '          <div class="form-group">\n' +
+      '            <label for="desc">Description:</label>\n' +
+      '            <input id="desc" type="text" class="form-control"/>\n' +
+      '          </div>\n' +
+      '          <div class="form-group">\n' +
+      '            <label for="year">Year:</label>\n' +
+      '            <input id="year" type="text" class="form-control"/>\n' +
+      '          </div>\n' +
+      '          <div class="form-group">\n' +
+      '            <label for="author">Author:</label>\n' +
+      '            <input id="author" type="text" class="form-control"/>\n' +
+      '          </div>\n' +
+      '        </div>\n' +
+      '      </div>\n' +
+      '      <div class="modal-footer">\n' +
+      '        <button id="file-uploader-save" class="btn btn-success">Save</button>\n' +
+      '        <button data-dismiss="modal" class="btn">Close</button>\n' +
+      '      </div>\n' +
+      '    </div>\n' +
+      '  </div>\n' +
+      '</div>';
     this.progressDiv = "<div class='progress-bar'></div>";
     const contId = this.elName + '-container';
     const containerDiv = "<div class='container' id='" + contId + "'></div>";
     const dzDiv = "<form method='post' id='myDropzone' class='dropzone'></form>";
-    this.el.append(this.progressDiv, containerDiv, dzDiv);
+    this.el.append(this.progressDiv, containerDiv, dzDiv, this.modalDOM);
     this.container = $('#' + contId);
 
     // init dropzone
     Dropzone.options.myDropzone = {
       url: this.url,
       acceptedFiles: this.acceptedFiles,
-      sending: function(file, xhr, data) {
+      sending: (file, xhr, data) => {
         // send filename and type
         data.append("filename", file.name);
         data.append("type", fu.type);
       },
-      success: function(file, res) {
+      success: (file, res) => {
         // create new file
         const f = new File(fu.files.length, res.name, res.url, res.urlSmall, res.urlLarge, res.width, res.height, res.size);
         fu.files.push(f);
@@ -68,7 +115,7 @@ class FileUploader {
         // remove from dropzone
         $(file.previewElement).remove();
       },
-      queuecomplete: function() {
+      queuecomplete: () => {
         $('.dz-message').css({'display': 'block'});
       }
     };
@@ -78,24 +125,9 @@ class FileUploader {
       tolerance: 'pointer'
     });
 
-    // make click for modal
-    $('.item-image').on('click', function() {
-      console.log('2');
-      const fileEl = $(this).find('img');
-      console.log(fileEl);
-      const id = fileEl.attr('id');
-      const file = fu.files[id];
-      fu.setModalFile(file);
-    });
+    this.setListeners();
 
-    // $('.file-container').click(function() {
-    //   console.log('1111');
-    // });
-
-    // $('.fa-check').click(() => {
-    //   $('.file-container').removeClass('primary');
-    //
-    // });
+    $('#save-data').click(() => this.saveData());
   }
 
   addFile(file){
@@ -109,7 +141,7 @@ class FileUploader {
     const item =
       "<div class='file-container'>" +
        control+
-      "  <div class='item-image'>" + // data-toggle='modal' data-target='#file-info-modal'
+      "  <div class='item-image' data-toggle='modal' data-target='#file-info-modal'>" +
       "    <img src=" + file.urlS + " id='" + file.id + "'>" +
       "  </div>" +
       "</div>";
@@ -129,10 +161,11 @@ class FileUploader {
 
      */
     this.container.append(item);
+
+    this.setListeners();
   }
 
   setModalFile(file) {
-    console.log('1');
     // set data in modal
     $('.modal-header').text(file.name);
     const body = '.modal-body #';
@@ -151,12 +184,60 @@ class FileUploader {
     $(body + 'author').val(file.author);
 
     // save changes
-    $('#file-uploader-save').click(function() {
+    $('#file-uploader-save').click(() => {
       file.title = $(body + 'title').val();
       file.description = $(body + 'desc').val();
       file.year = $(body + 'year').val();
       file.author = $(body + 'author').val();
       $('#file-info-modal').modal('hide');
     });
+  }
+
+  setListeners() {
+    // make click for modal
+    const fu = this;
+    $('.file-container > .item-image').click(function() {
+      const fileEl = $(this).find('img');
+      const id = fileEl.attr('id');
+      const file = fu.files[id];
+      fu.setModalFile(file);
+    });
+
+    // make picture preview
+    $('.file-container > .item-control > .fa-check').click(function() {
+      $('.file-container').removeClass('preview');
+      $(this).parents('.file-container').addClass('preview');
+    });
+
+    // delete item
+    $('.file-container > .item-control > .fa-times').click(function () {
+      $(this).parents('.file-container').remove();
+    });
+
+    // make first image preview
+    if (this.files.length === 1) {
+      if (this.dataPreview) {
+        $('.file-container').addClass('preview');
+      }
+    }
+  }
+
+  saveData() {
+    // save general data
+    let data = [];
+    const fu = this;
+    $('.file-container').each(function (i, item) {
+      console.log(item);
+      const ind = $(item).find('img').attr('id');
+      data.push(fu.files[ind]);
+    });
+    $('#' + this.dataInput).val(JSON.stringify(data));
+
+    // save preview
+    if (this.dataPreview) {
+      const id = $('.preview').find('img').attr('id');
+      const previewUrl = this.files[id].url;
+      $('#' + this.dataPreview).val(previewUrl);
+    }
   }
 }
