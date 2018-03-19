@@ -10,6 +10,8 @@ block body
     input#images-preview(type='hidden')
   //#image
     input#image-input(type='hidden')
+  #files
+    input#files-input(type='hidden')
 
 block scripts
   script(src="/js/fileupload.js")
@@ -34,4 +36,12 @@ block scripts
       url: "/file/upload",
       acceptedFiles: ["gif", "jpg", "png"],
       data: "image-input"
+    });
+  script.
+    new FileUploader({
+      type: "files",
+      element: "files",
+      url: "/file/upload",
+      acceptedFiles: ["pdf", "exe", "png"],
+      data: "files-input"
     });

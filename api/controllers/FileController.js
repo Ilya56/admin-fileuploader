@@ -19,16 +19,16 @@ module.exports = {
       small = parseInt(req.body.small) || 150;
       large = parseInt(req.body.large) || 900;
     } catch (e) {
-      res.badRequest('Invalid request');
+      return res.badRequest('Invalid request');
     }
 
     // if has no file name send error
 	  if (!req.body.filename)
-	    res.serverError('No file name in request');
+	    return res.serverError('No file name in request');
 
 	  // if request has noo file type send error
     if (!req.body.type)
-      res.serverError('No type of file');
+      return res.serverError('No type of file');
     const type = req.body.type;
 
 	  // make random string in end of file
@@ -46,12 +46,12 @@ module.exports = {
       dirname: fullDir,
       saveAs: filename
     }, function(err, file) {
-      if (err) res.serverError(err);
+      if (err) return res.serverError(err);
 
       // images
       if (type === 'images' || type === 'image') {
         Jimp.read('.' + dir + filename, function (err, image) {
-          if (err) res.serverError(err);
+          if (err) return res.serverError(err);
 
           const width = image.bitmap.width;
           const height = image.bitmap.height;
@@ -75,6 +75,16 @@ module.exports = {
                   });
                 });
             });
+        });
+      } else if (type === 'files' || type === 'file') {
+        const ext = filename.substr(filename.lastIndexOf('.') + 1, filename.length);
+        const url = '/images/icons/' + ext + '/' + ext + '-128_32.png';
+        res.created({
+          name: filenameOrig,
+          url: url,
+          urlSmall: url,
+          urlLarge: url,
+          size: file[0].size
         });
       }
 	  });

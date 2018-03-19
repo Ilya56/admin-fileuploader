@@ -49,72 +49,77 @@ class FileUploader {
     const fu = this;
 
     // add progress, gallery, dropzone and modal
-    const modalDOM = '<div id="file-info-modal" role="dialog" class="modal fade">\n' +
-      '  <div class="modal-dialog">\n' +
-      '    <div class="modal-content">\n' +
-      '      <div class="modal-header"></div>\n' +
-      '      <div class="modal-body form-horizontal"><img id="file-image" class="block-center"/>\n' +
-      '        <div class="info">\n' +
-      '          <div class="form-group">\n' +
-      '            <label for="name" class="col-md-2">File name:</label>\n' +
-      '            <label id="name" class="col-md-8"></label>\n' +
-      '          </div>\n' +
-      '          <div class="form-group">\n' +
-      '            <label for="dimensions" class="col-md-2">File dimensions:</label>\n' +
-      '            <label id="dimensions" class="col-md-8"></label>\n' +
-      '          </div>\n' +
-      '          <div class="form-group">\n' +
-      '            <label for="size" class="col-md-2">File size:</label>\n' +
-      '            <label id="size" class="col-md-8"></label>\n' +
-      '          </div>\n' +
-      '          <div class="form-group">\n' +
-      '            <label for="url">URL:</label>\n' +
-      '            <input id="url" type="text" readonly="readonly" class="form-control"/>\n' +
-      '          </div>\n' +
-      '          <div class="form-group">\n' +
-      '            <label for="title">Title:</label>\n' +
-      '            <input id="title" type="text" class="form-control"/>\n' +
-      '          </div>\n' +
-      '          <div class="form-group">\n' +
-      '            <label for="desc">Description:</label>\n' +
-      '            <input id="desc" type="text" class="form-control"/>\n' +
-      '          </div>\n' +
-      '          <div class="form-group">\n' +
-      '            <label for="year">Year:</label>\n' +
-      '            <input id="year" type="text" class="form-control"/>\n' +
-      '          </div>\n' +
-      '          <div class="form-group">\n' +
-      '            <label for="author">Author:</label>\n' +
-      '            <input id="author" type="text" class="form-control"/>\n' +
-      '          </div>\n' +
-      '        </div>\n' +
-      '      </div>\n' +
-      '      <div class="modal-footer">\n' +
-      '        <button id="file-uploader-save" class="btn btn-success">Save</button>\n' +
-      '        <button data-dismiss="modal" class="btn">Close</button>\n' +
-      '      </div>\n' +
-      '    </div>\n' +
-      '  </div>\n' +
-      '</div>';
+    const modalDOM = [
+        '<div id="file-info-modal" role="dialog" class="modal fade">\n' +
+        '  <div class="modal-dialog">\n' +
+        '    <div class="modal-content">\n' +
+        '      <div class="modal-header"></div>\n' +
+        '      <div class="modal-body form-horizontal"><img id="file-image" class="block-center"/>\n' +
+        '        <div class="info">\n' +
+        '          <div class="form-group">\n' +
+        '            <label for="name" class="col-md-2">File name:</label>\n' +
+        '            <label id="name" class="col-md-8"></label>\n' +
+        '          </div>\n' +
+        '          <div class="form-group">\n' +
+        '            <label for="dimensions" class="col-md-2">File dimensions:</label>\n' +
+        '            <label id="dimensions" class="col-md-8"></label>\n' +
+        '          </div>\n' +
+        '          <div class="form-group">\n' +
+        '            <label for="size" class="col-md-2">File size:</label>\n' +
+        '            <label id="size" class="col-md-8"></label>\n' +
+        '          </div>\n' +
+        '          <div class="form-group">\n' +
+        '            <label for="url">URL:</label>\n' +
+        '            <input id="url" type="text" readonly="readonly" class="form-control"/>\n' +
+        '          </div>\n' +
+        '          <div class="form-group">\n' +
+        '            <label for="title">Title:</label>\n' +
+        '            <input id="title" type="text" class="form-control"/>\n' +
+        '          </div>\n' +
+        '          <div class="form-group">\n' +
+        '            <label for="desc">Description:</label>\n' +
+        '            <input id="desc" type="text" class="form-control"/>\n' +
+        '          </div>\n' +
+        '          <div class="form-group">\n' +
+        '            <label for="year">Year:</label>\n' +
+        '            <input id="year" type="text" class="form-control"/>\n' +
+        '          </div>\n' +
+        '          <div class="form-group">\n' +
+        '            <label for="author">Author:</label>\n' +
+        '            <input id="author" type="text" class="form-control"/>\n' +
+        '          </div>\n' +
+        '        </div>\n' +
+        '      </div>\n' +
+        '      <div class="modal-footer">\n' +
+        '        <button id="file-uploader-save" class="btn btn-success">Save</button>\n' +
+        '        <button data-dismiss="modal" class="btn">Close</button>\n' +
+        '      </div>\n' +
+        '    </div>\n' +
+        '  </div>\n' +
+        '</div>'
+    ];
     this.progressDiv = "<div class='progress-bar'></div>";
     const contId = this.elName + '-container';
     const containerDiv = "<div class='container' id='" + contId + "'></div>";
-    const dzDiv = "<form method='post' id='myDropzone' class='dropzone'></form>";
+    const dzId = this.elName + '-dropzone';
+    const dzDiv = "<form method='post' id=" + dzId + " class='dropzone'></form>";
     const saveButton = '<button id="save-data" type="button">SAVE</button>';
-    this.el.append(this.progressDiv, containerDiv, dzDiv, modalDOM, saveButton);
+    this.el.append(this.progressDiv, containerDiv, dzDiv, modalDOM[0], saveButton);
     this.container = $('#' + contId);
 
     // init dropzone
-    const myDropzone = new Dropzone('#myDropzone', {
+    const myDropzone = new Dropzone('#' + dzId, {
       url: this.url,
       acceptedFiles: this.acceptedFiles,
       maxFiles: (this.type === 'image' || this.type === 'file') ? 1 : null,
       sending: (file, xhr, data) => {
         // send filename and type
+        console.log('before sending');
         data.append("filename", file.name);
         data.append("type", fu.type);
         data.append("small", fu.small);
         data.append("large", fu.large);
+        console.log('after sending');
       },
       success: (file, res) => {
         // create new file
@@ -130,22 +135,21 @@ class FileUploader {
         $('.dz-message').css({'display': 'block'});
       },
       maxfilesexceeded: (file) => {
+        // if there must by only one file, delete others
         myDropzone.removeAllFiles();
         myDropzone.addFile(file);
       },
       init: function() {
         this.on("thumbnail", function(file) {
+          // check file dimension
           if (fu.w && fu.h) {
             if (Math.abs(file.width * fu.h - file.height * fu.w) !== 0) {
               this.removeFile(file);
               alert('Неправильное соотношение сторон!');
+              $('.dz-message').css({'display': 'block'});
             }
           }
-          file.done();
         });
-      },
-      accept: function(file, done) {
-        file.done = done;
       }
     });
 
@@ -204,7 +208,12 @@ class FileUploader {
     // static data
     $(body + 'file-image').attr('src', file.urlL);
     $(body + 'name').text(file.name);
-    $(body + 'dimensions').text(file.width + 'x' + file.height);
+    let d;
+    if (this.type === 'images' || this.type === 'image')
+      d = file.width + 'x' + file.height;
+    else
+      d = '-----';
+    $(body + 'dimensions').text(d);
     $(body + 'size').text(file.size);
     $(body + 'url').val(window.location.hostname + file.url);
 
