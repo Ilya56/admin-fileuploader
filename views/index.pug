@@ -8,10 +8,12 @@ block body
   #images
     input#images-input(type='hidden')
     input#images-preview(type='hidden')
-  //#image
+  #image
     input#image-input(type='hidden')
   #files
     input#files-input(type='hidden')
+  #file
+    input#file-input(type='hidden')
 
 block scripts
   script(src="/js/fileupload.js")
@@ -25,11 +27,11 @@ block scripts
       small: 150,
       large: 900,
       images: {
-        dataPreview: 'images-preview',
-        w: 4, h: 3
+        dataPreview: 'images-preview'//,
+        //w: 4, h: 3
       }
     });
-  //script.
+  script.
     new FileUploader({
       type: "image",
       element: "image",
@@ -42,6 +44,14 @@ block scripts
       type: "files",
       element: "files",
       url: "/file/upload",
-      acceptedFiles: ["pdf", "exe", "png"],
+      acceptedFiles: ["pdf", "png", "zip"],
       data: "files-input"
+    });
+  script.
+    new FileUploader({
+      type: "file",
+      element: "file",
+      url: "/file/upload",
+      acceptedFiles: ["pdf", "png", "zip"],
+      data: "file-input"
     });
