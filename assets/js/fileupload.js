@@ -35,8 +35,8 @@ class FileUploader {
       if (ci.dataPreview)
         this.dataPreview = ci.dataPreview;
       if (ci.w && ci.h) {
-        this.width = ci.w;
-        this.height = ci.h;
+        this.w = ci.w;
+        this.h = ci.h;
       }
     }
 
@@ -135,9 +135,11 @@ class FileUploader {
       },
       init: function() {
         this.on("thumbnail", function(file) {
-          if (Math.abs(file.width * fu.h - file.height * fu.w) !== 0) {
-            this.removeFile(file);
-            alert('Неправильное соотношение сторон!');
+          if (fu.w && fu.h) {
+            if (Math.abs(file.width * fu.h - file.height * fu.w) !== 0) {
+              this.removeFile(file);
+              alert('Неправильное соотношение сторон!');
+            }
           }
           file.done();
         });
