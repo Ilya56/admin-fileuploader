@@ -8,7 +8,8 @@ block body
   #images
     input#images-input(type='hidden')
     input#images-preview(type='hidden')
-  button#save-data(type='button') SAVE
+  //#image
+    input#image-input(type='hidden')
 
 block scripts
   script(src="/js/fileupload.js")
@@ -19,7 +20,18 @@ block scripts
       url: "/file/upload",
       acceptedFiles: ["gif", "jpg", "png"],
       data: "images-input",
+      small: 150,
+      large: 900,
       images: {
-        dataPreview: 'images-preview'
+        dataPreview: 'images-preview',
+        w: 4, h: 3
       }
+    });
+  //script.
+    new FileUploader({
+      type: "image",
+      element: "image",
+      url: "/file/upload",
+      acceptedFiles: ["gif", "jpg", "png"],
+      data: "image-input"
     });

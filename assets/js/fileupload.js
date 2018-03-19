@@ -24,13 +24,20 @@ class FileUploader {
     this.url = config.url;
     this.acceptedFiles = config.acceptedFiles;
     this.dataInput = config.data;
+    this.small = config.small;
+    this.large = config.large;
 
     this.files = [];
     this.el = $('#' + this.elName);
 
     if (this.type === 'images') {
-      if (config.images.dataPreview)
-        this.dataPreview = config.images.dataPreview;
+      const ci = config.images;
+      if (ci.dataPreview)
+        this.dataPreview = ci.dataPreview;
+      if (ci.w && ci.h) {
+        this.width = ci.w;
+        this.height = ci.h;
+      }
     }
 
     if (!this.acceptedFiles)
@@ -42,7 +49,7 @@ class FileUploader {
     const fu = this;
 
     // add progress, gallery, dropzone and modal
-    this.modalDOM = '<div id="file-info-modal" role="dialog" class="modal fade">\n' +
+    const modalDOM = '<div id="file-info-modal" role="dialog" class="modal fade">\n' +
       '  <div class="modal-dialog">\n' +
       '    <div class="modal-content">\n' +
       '      <div class="modal-header"></div>\n' +
@@ -93,17 +100,21 @@ class FileUploader {
     const contId = this.elName + '-container';
     const containerDiv = "<div class='container' id='" + contId + "'></div>";
     const dzDiv = "<form method='post' id='myDropzone' class='dropzone'></form>";
-    this.el.append(this.progressDiv, containerDiv, dzDiv, this.modalDOM);
+    const saveButton = '<button id="save-data" type="button">SAVE</button>';
+    this.el.append(this.progressDiv, containerDiv, dzDiv, modalDOM, saveButton);
     this.container = $('#' + contId);
 
     // init dropzone
-    Dropzone.options.myDropzone = {
+    const myDropzone = new Dropzone('#myDropzone', {
       url: this.url,
       acceptedFiles: this.acceptedFiles,
+      maxFiles: (this.type === 'image' || this.type === 'file') ? 1 : null,
       sending: (file, xhr, data) => {
         // send filename and type
         data.append("filename", file.name);
         data.append("type", fu.type);
+        data.append("small", fu.small);
+        data.append("large", fu.large);
       },
       success: (file, res) => {
         // create new file
@@ -115,10 +126,26 @@ class FileUploader {
         // remove from dropzone
         $(file.previewElement).remove();
       },
-      queuecomplete: () => {
+      completemultiple: () => {
         $('.dz-message').css({'display': 'block'});
+      },
+      maxfilesexceeded: (file) => {
+        myDropzone.removeAllFiles();
+        myDropzone.addFile(file);
+      },
+      init: function() {
+        this.on("thumbnail", function(file) {
+          if (Math.abs(file.width * fu.h - file.height * fu.w) !== 0) {
+            this.removeFile(file);
+            alert('Неправильное соотношение сторон!');
+          }
+          file.done();
+        });
+      },
+      accept: function(file, done) {
+        file.done = done;
       }
-    };
+    });
 
     // make sortable items
     this.container.sortable({
@@ -160,6 +187,8 @@ class FileUploader {
     </div>
 
      */
+    if (this.type === 'image' || this.type === 'file')
+      this.container.empty();
     this.container.append(item);
 
     this.setListeners();

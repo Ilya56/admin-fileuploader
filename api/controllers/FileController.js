@@ -14,8 +14,13 @@ module.exports = {
     const fullDir = process.cwd() + dir;
 
     // small and large sizes
-    const small = 150;
-    const large = 900;
+    let small, large;
+    try {
+      small = parseInt(req.body.small) || 150;
+      large = parseInt(req.body.large) || 900;
+    } catch (e) {
+      res.badRequest('Invalid request');
+    }
 
     // if has no file name send error
 	  if (!req.body.filename)
@@ -44,7 +49,7 @@ module.exports = {
       if (err) res.serverError(err);
 
       // images
-      if (type === 'images') {
+      if (type === 'images' || type === 'image') {
         Jimp.read('.' + dir + filename, function (err, image) {
           if (err) res.serverError(err);
 
